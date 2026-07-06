@@ -1,0 +1,55 @@
+{
+  "name": "@global-torque/markdown-it-wikilinks",
+  "private": false,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "pnpm run build",
+    "prepare": "tsc -p tsconfig.build.json",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "markdown-it": "^14.1.1"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^25.5.0",
+    "markdown-it": "^14.3.0",
+    "typescript": "^6.0.2",
+    "vitest": "4.1.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/global-torque/markdown-it-wikilinks.git"
+  },
+  "homepage": "https://github.com/global-torque/markdown-it-wikilinks#readme",
+  "bugs": {
+    "url": "https://github.com/global-torque/markdown-it-wikilinks/issues"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md",
+    "CHANGELOG.md",
+    "SECURITY.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./url": {
+      "types": "./dist/url.d.ts",
+      "import": "./dist/url.js"
+    }
+  }
+}
