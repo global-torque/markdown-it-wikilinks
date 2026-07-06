@@ -7,7 +7,6 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "prepack": "pnpm run build",
-    "prepare": "tsc -p tsconfig.build.json",
     "test:run": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
