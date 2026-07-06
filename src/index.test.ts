@@ -8,7 +8,7 @@ function renderInline(src: string, options: WikilinksOptions = {}, env: Record<s
   return new MarkdownIt().use(wikilinks(options)).renderInline(src, env);
 }
 
-describe('@webdevelop-pro/markdown-it-wikilinks', () => {
+describe('@global-torque/markdown-it-wikilinks', () => {
   it('renders simple wiki links with the default relative URL behavior', () => {
     expect(renderInline('[[contact]]')).toBe(
       '<a href="./contact.html" title="contact">contact</a>',
