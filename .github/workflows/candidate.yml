@@ -3,7 +3,7 @@ name: Candidate artifact
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
 
 permissions:
