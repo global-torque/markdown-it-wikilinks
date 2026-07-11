@@ -2,7 +2,7 @@
 
 ## 0.2.0-beta.3 - Unreleased
 
-- Moved the independently reviewed 0.2 source to protected public `main` with
+- Prepared the independently reviewed 0.2 source for protected public `main` with
   SHA-pinned CI, public API governance, clean-source artifact manifests, and
   provenance workflow.
 - Supersedes the dirty-tree beta.2 implementation artifact; beta.2 remains
