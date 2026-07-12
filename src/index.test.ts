@@ -114,6 +114,33 @@ describe("@global-torque/markdown-it-wikilinks core", () => {
     ).toContain('href="/resolved?from=./target.html"');
   });
 
+  it.each([
+    "javascript:alert(1)",
+    " JaVaScRiPt:alert(1) ",
+    "java\u0000script:alert(1)",
+    "data:text/html,<script>alert(1)</script>",
+    "vbscript:msgbox(1)",
+  ])("neutralizes an unsafe host-resolved destination %s", (destination) => {
+    expect(
+      renderInline("[[target|Target]]", {
+        resolveHref: () => destination,
+      }),
+    ).toContain('href="#"');
+  });
+
+  it.each([
+    "/resolved/path?mode=full#section",
+    "../relative/path",
+    "https://example.test/resolved",
+    "mailto:security@example.test",
+  ])("preserves a safe host-resolved destination %s", (destination) => {
+    expect(
+      renderInline("[[target|Target]]", {
+        resolveHref: () => destination,
+      }),
+    ).toContain(`href="${destination}"`);
+  });
+
   it("falls tooltip text back to a standard title without a UI renderer", () => {
     expect(
       renderInline("[[target|Target]]", {
@@ -140,7 +167,15 @@ describe("@global-torque/markdown-it-wikilinks core", () => {
         htmlAttributes: {
           class: "wiki-link",
           title: "<custom & title>",
+          "data-state": "ready",
+          "aria-label": "safe anchor",
           href: "javascript:override()",
+          onclick: "alert(1)",
+          onmouseover: "alert(2)",
+          style: "background: url(javascript:alert(3))",
+          formaction: "javascript:alert(4)",
+          srcdoc: "<script>alert(5)</script>",
+          "xlink:href": "javascript:alert(6)",
           "bad attr": "ignored",
           empty: null,
           missing: undefined,
@@ -148,7 +183,7 @@ describe("@global-torque/markdown-it-wikilinks core", () => {
         },
       }),
     ).toBe(
-      '<a href="./badlabel.html?a=1&amp;b=2" class="wiki-link" title="&lt;custom &amp; title&gt;" enabled="false">&lt;script&gt;&#39;&quot;&amp;&lt;/script&gt;</a>',
+      '<a href="./badlabel.html?a=1&amp;b=2" class="wiki-link" title="&lt;custom &amp; title&gt;" data-state="ready" aria-label="safe anchor">&lt;script&gt;&#39;&quot;&amp;&lt;/script&gt;</a>',
     );
   });
 

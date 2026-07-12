@@ -5,6 +5,9 @@
 - Prepared the independently reviewed 0.2 source for protected public `main` with
   SHA-pinned CI, public API governance, clean-source artifact manifests, and
   provenance workflow.
+- Revalidate host-resolved URL schemes and restrict static anchor attributes to
+  an inert safe list so callbacks and configuration cannot reintroduce active
+  markup.
 - Supersedes the dirty-tree beta.2 implementation artifact; beta.2 remains
   historical local evidence and must not be uploaded or retagged.
 

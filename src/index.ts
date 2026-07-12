@@ -11,6 +11,28 @@ import { createWikilinkHref } from "./url.js";
 const WIKILINK_PATTERN = /^\[\[([^|\]\n]+)(\|([^\]\n]+))?\]\]/;
 const SAFE_ATTRIBUTE_NAME_PATTERN = /^[^\s"'<>/=]+$/;
 const URI_SCHEME_PATTERN = /^[A-Za-z][A-Za-z\d+.-]*:/;
+const SAFE_EXTERNAL_SCHEMES = new Set(["http", "https", "mailto", "tel"]);
+const SAFE_ANCHOR_ATTRIBUTE_NAMES = new Set([
+  "accesskey",
+  "class",
+  "contenteditable",
+  "dir",
+  "download",
+  "draggable",
+  "hidden",
+  "hreflang",
+  "id",
+  "lang",
+  "referrerpolicy",
+  "rel",
+  "role",
+  "spellcheck",
+  "tabindex",
+  "target",
+  "title",
+  "translate",
+  "type",
+]);
 
 /**
  * HTML attribute values accepted by the renderer.
@@ -66,7 +88,7 @@ export interface WikilinksOptions {
   readonly makeAllLinksAbsolute?: boolean;
   /** Suffix appended to local page destinations. */
   readonly uriSuffix?: string;
-  /** Static attributes added to every anchor; unsafe names and `href` are ignored. */
+  /** Static safe-list attributes added to every anchor; unsafe names and `href` are ignored. */
   readonly htmlAttributes?: Readonly<
     Record<string, WikilinkHtmlAttributeValue>
   >;
@@ -224,7 +246,9 @@ function renderWikilink(
     defaultHref,
     env,
   } satisfies WikilinkRenderContext);
-  const href = options.resolveHref?.(initialContext) ?? defaultHref;
+  const href = sanitizeResolvedHref(
+    options.resolveHref?.(initialContext) ?? defaultHref,
+  );
   const tooltip = options.resolveTooltip?.(initialContext)?.trim() ?? "";
   const hasCustomTitle = hasRenderableAttribute(
     "title",
@@ -282,8 +306,7 @@ function renderHtmlAttributes(
   const rendered = [`href="${escapeHtmlAttribute(href)}"`];
   for (const [name, value] of Object.entries(attributes)) {
     if (
-      name.toLowerCase() === "href" ||
-      !SAFE_ATTRIBUTE_NAME_PATTERN.test(name) ||
+      !isSafeAnchorAttributeName(name) ||
       value === null ||
       value === undefined
     ) {
@@ -305,10 +328,40 @@ function hasRenderableAttribute(
   return Object.entries(attributes).some(
     ([attributeName, value]) =>
       attributeName.toLowerCase() === normalizedName &&
-      SAFE_ATTRIBUTE_NAME_PATTERN.test(attributeName) &&
+      isSafeAnchorAttributeName(attributeName) &&
       value !== null &&
       value !== undefined,
   );
+}
+
+function isSafeAnchorAttributeName(name: string): boolean {
+  if (!SAFE_ATTRIBUTE_NAME_PATTERN.test(name)) {
+    return false;
+  }
+  const normalizedName = name.toLowerCase();
+  return (
+    SAFE_ANCHOR_ATTRIBUTE_NAMES.has(normalizedName) ||
+    /^aria-[a-z][a-z\d_.:-]*$/i.test(name) ||
+    /^data-[a-z][a-z\d_.:-]*$/i.test(name)
+  );
+}
+
+function sanitizeResolvedHref(href: string): string {
+  let cleaned = "";
+  for (const character of href) {
+    const codePoint = character.codePointAt(0) ?? 0;
+    if (!(codePoint <= 0x1f || (codePoint >= 0x7f && codePoint <= 0x9f))) {
+      cleaned += character;
+    }
+  }
+  cleaned = cleaned.trim();
+  const scheme = URI_SCHEME_PATTERN.exec(cleaned)?.[0]
+    .slice(0, -1)
+    .toLowerCase();
+  if (scheme !== undefined && !SAFE_EXTERNAL_SCHEMES.has(scheme)) {
+    return "#";
+  }
+  return cleaned || "#";
 }
 
 function transformReferencePath(

@@ -59,7 +59,8 @@ assert.equal(createWikilinkHref("javascript:alert(1)"), "#");
 Available core options are:
 
 - `baseURL`, `relativeBaseURL`, `makeAllLinksAbsolute`, and `uriSuffix`;
-- immutable `htmlAttributes`;
+- immutable, safe-listed `htmlAttributes` (standard inert anchor attributes
+  plus `aria-*` and `data-*`);
 - `generatePagePathFromLabel`, `postProcessPagePath`,
   `postProcessPageHash`, and `postProcessLabel`;
 - synchronous `resolveHref`, `resolveTooltip`, and `renderTooltip` callbacks.
@@ -133,10 +134,12 @@ beta tarball or tag with different bytes.
 
 ## Security And Release State
 
-The core escapes hrefs, labels, titles, and static attributes, and ignores
-unsafe attribute names and caller-supplied `href`. The Node adapter treats
-content paths and symlinks as untrusted. Application render callbacks remain
-trusted code.
+The core escapes hrefs, labels, titles, and static attributes, ignores
+attributes outside its inert anchor safe list, and revalidates both default and
+host-resolved href schemes. Caller-supplied `href`, event handlers, `style`, and
+other active attributes are ignored. The Node adapter treats content paths and
+symlinks as untrusted. Application tooltip render callbacks remain trusted
+code.
 
 See [SECURITY.md](SECURITY.md) for private vulnerability reporting. This beta
 is not supported as a production npm release.
