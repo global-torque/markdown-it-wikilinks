@@ -18,6 +18,21 @@ pnpm add @global-torque/markdown-it-wikilinks markdown-it
 Node 22 or newer and markdown-it 14 are supported.
 
 ## Core Usage
+> [!CAUTION]
+> This default-branch source is a quarantined pre-0.2 bridge, not an approved
+> release candidate. Do not install it from GitHub, a branch, or npm. Use only
+> a future immutable prerelease asset after its checksum, consumer evidence,
+> and public release review are complete.
+
+Framework-free ESM markdown-it plugin for Obsidian-style wikilinks.
+
+## Installation Status
+
+There is no supported installation command for this source revision. Mutable
+GitHub dependencies and default-branch installs are prohibited. Wait for an
+approved immutable prerelease asset and its published integrity evidence.
+
+## Usage
 
 ```ts
 import MarkdownIt from "markdown-it";
@@ -78,6 +93,7 @@ const options = {
 
 `renderTooltip` is a trusted integration boundary. Insert `escapedTooltip`,
 not raw `tooltip`, unless the host performs its own equivalent escaping.
+## Options
 
 ## Contained Node Resolver
 
