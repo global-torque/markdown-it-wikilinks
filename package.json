@@ -1,7 +1,7 @@
 {
   "name": "@global-torque/markdown-it-wikilinks",
   "private": false,
-  "version": "0.2.0-beta.3",
+  "version": "0.2.0-beta.4",
   "description": "Framework-free markdown-it wikilinks with optional contained Node tooltip resolution.",
   "keywords": [
     "markdown-it",

@@ -159,7 +159,7 @@ const EXPECTED_PACKAGE_VERSIONS = new Map([
   ["@global-torque/client-error-handling", "0.1.0-beta.3"],
   ["@global-torque/content-toolkit", "0.2.0-beta.7"],
   ["@global-torque/design-tokens", "0.1.0-beta.2"],
-  ["@global-torque/markdown-it-wikilinks", "0.2.0-beta.3"],
+  ["@global-torque/markdown-it-wikilinks", "0.2.0-beta.4"],
   ["@global-torque/vitepress-toolkit", "0.2.0-beta.6"],
 ]);
 const EXPECTED_SIDE_EFFECTS = new Map([

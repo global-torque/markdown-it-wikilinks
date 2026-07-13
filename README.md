@@ -1,8 +1,7 @@
 # @global-torque/markdown-it-wikilinks
 
-> **Public 0.2 beta candidate:** the source is under review. Do not install a
-> mutable branch or reuse the earlier dirty-tree beta.2 artifact. Promotion
-> requires the protected-tag beta.3 asset and named-consumer evidence.
+> **Public prerelease:** `0.2.0-beta.4` is the first npm-published candidate.
+> Pin the exact version while the 0.2 contract remains in beta.
 
 An ESM-only markdown-it plugin for escaped Obsidian-style `[[wikilinks]]`. The
 root package produces ordinary `<a>` HTML and has no Node filesystem, Vue, or
@@ -12,27 +11,12 @@ explicit `./node` adapter.
 ## Install
 
 ```sh
-pnpm add @global-torque/markdown-it-wikilinks markdown-it
+pnpm add @global-torque/markdown-it-wikilinks@0.2.0-beta.4 markdown-it@14.3.0
 ```
 
 Node 22 or newer and markdown-it 14 are supported.
 
-## Core Usage
-> [!CAUTION]
-> This default-branch source is a quarantined pre-0.2 bridge, not an approved
-> release candidate. Do not install it from GitHub, a branch, or npm. Use only
-> a future immutable prerelease asset after its checksum, consumer evidence,
-> and public release review are complete.
-
-Framework-free ESM markdown-it plugin for Obsidian-style wikilinks.
-
-## Installation Status
-
-There is no supported installation command for this source revision. Mutable
-GitHub dependencies and default-branch installs are prohibited. Wait for an
-approved immutable prerelease asset and its published integrity evidence.
-
-## Usage
+## Core usage
 
 ```ts
 import MarkdownIt from "markdown-it";
@@ -93,7 +77,6 @@ const options = {
 
 `renderTooltip` is a trusted integration boundary. Insert `escapedTooltip`,
 not raw `tooltip`, unless the host performs its own equivalent escaping.
-## Options
 
 ## Contained Node Resolver
 
