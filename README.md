@@ -1,26 +1,18 @@
 # @global-torque/markdown-it-wikilinks
 
+> [!CAUTION]
+> This default-branch source is a quarantined pre-0.2 bridge, not an approved
+> release candidate. Do not install it from GitHub, a branch, or npm. Use only
+> a future immutable prerelease asset after its checksum, consumer evidence,
+> and public release review are complete.
+
 Framework-free ESM markdown-it plugin for Obsidian-style wikilinks.
 
-This package is released publicly as `@global-torque/markdown-it-wikilinks`.
-Inside the Webdevelop monorepo it temporarily remains available through the
-internal alias `@webdevelop-pro/markdown-it-wikilinks` until consumers migrate.
+## Installation Status
 
-## Install
-
-```sh
-pnpm add markdown-it @global-torque/markdown-it-wikilinks
-```
-
-Before npm publication, pinned GitHub bridge installs may use:
-
-```json
-{
-  "dependencies": {
-    "@global-torque/markdown-it-wikilinks": "github:global-torque/markdown-it-wikilinks#v0.1.0-github.1"
-  }
-}
-```
+There is no supported installation command for this source revision. Mutable
+GitHub dependencies and default-branch installs are prohibited. Wait for an
+approved immutable prerelease asset and its published integrity evidence.
 
 ## Usage
 
@@ -39,14 +31,6 @@ md.renderInline('[[docs/Main Page|Read more]]');
 The plugin renders `[[Page]]` and `[[Page|Label]]` links. Tooltip text can be
 loaded from markdown frontmatter without importing Vue components, app aliases,
 or UI packages.
-
-For Advayta content that stores tooltip text in `description`, configure:
-
-```ts
-md.use(wikilinks({
-  tooltipFrontmatterField: 'description',
-}));
-```
 
 ## Options
 
