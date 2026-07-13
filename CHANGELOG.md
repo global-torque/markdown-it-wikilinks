@@ -1,6 +1,13 @@
 # Changelog
 
-## 0.2.0-beta.3 - Unreleased
+## 0.2.0-beta.4 - 2026-07-13
+
+- Restored the independently reviewed public source after the temporary
+  default-branch quarantine and repinned CI to the current governance workflow.
+- Minted a new prerelease identity so the superseded beta.3 candidate bytes are
+  never reused for npm publication.
+
+## 0.2.0-beta.3 - Superseded local candidate
 
 - Prepared the independently reviewed 0.2 source for protected public `main` with
   SHA-pinned CI, public API governance, clean-source artifact manifests, and
@@ -42,10 +49,6 @@
 
 - Publication was frozen after the 0.2 audit invalidated the earlier
   release-readiness assessment. This candidate must never be published.
-## Unreleased
-
-- Quarantined the unsupported pre-0.2 default-branch bridge, removed mutable
-  installation guidance and private bridge wording, and disabled publication.
 
 ## 0.0.1
 
