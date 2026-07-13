@@ -1,31 +1,70 @@
 {
   "name": "@global-torque/markdown-it-wikilinks",
-  "private": true,
-  "version": "0.0.1",
+  "private": false,
+  "version": "0.2.0-beta.3",
+  "description": "Framework-free markdown-it wikilinks with optional contained Node tooltip resolution.",
+  "keywords": [
+    "markdown-it",
+    "wikilinks",
+    "obsidian",
+    "markdown"
+  ],
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
+    "lint": "eslint --max-warnings=0 src scripts vitest.config.ts",
+    "format:check": "prettier --check \"src/**/*.ts\" \"scripts/**/*.mjs\" \".github/**/*.{yml,json,md}\" \"docs/{rfcs,ossf}/**/*.md\" \"*.{json,md,yaml}\"",
+    "format:write": "prettier --write \"src/**/*.ts\" \"scripts/**/*.mjs\" \".github/**/*.{yml,json,md}\" \"docs/{rfcs,ossf}/**/*.md\" \"*.{json,md,yaml}\"",
     "test:run": "vitest run",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "api:check": "api-extractor run --verbose && api-extractor run --config api-extractor.node.json --verbose",
+    "api:report:update": "pnpm run build && api-extractor run --local --verbose && api-extractor run --config api-extractor.node.json --local --verbose",
+    "docs:api": "pnpm run api:report:update && api-documenter markdown --input temp/root --output docs/api && api-documenter markdown --input temp/node --output docs/api-node",
+    "package:lint": "publint && attw --pack . --profile esm-only",
+    "content:check": "node scripts/verify-public-content.mjs",
+    "ci": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test:coverage && pnpm run build && pnpm run api:check && pnpm run package:lint && pnpm run content:check"
   },
   "peerDependencies": {
     "markdown-it": "^14.1.1"
   },
-  "devDependencies": {
+  "dependencies": {
     "@types/markdown-it": "^14.1.2",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@microsoft/api-documenter": "7.30.7",
+    "@microsoft/api-extractor": "7.58.9",
+    "@arethetypeswrong/cli": "0.18.5",
     "@types/node": "^25.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.63.0",
+    "@typescript-eslint/parser": "^8.63.0",
+    "@vitest/coverage-v8": "4.1.7",
+    "eslint": "9.39.4",
     "markdown-it": "^14.3.0",
+    "prettier": "3.9.5",
+    "publint": "0.3.21",
     "typescript": "^6.0.2",
     "vitest": "4.1.7"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/global-torque/markdown-it-wikilinks.git"
+    "url": "git+https://github.com/global-torque/markdown-it-wikilinks.git"
   },
   "homepage": "https://github.com/global-torque/markdown-it-wikilinks#readme",
   "bugs": {
     "url": "https://github.com/global-torque/markdown-it-wikilinks/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist",
@@ -33,6 +72,10 @@
     "LICENSE",
     "NOTICE.md",
     "CHANGELOG.md",
+    "docs/api",
+    "docs/api-node",
+    "etc/markdown-it-wikilinks.api.md",
+    "etc/markdown-it-wikilinks-node.api.md",
     "SECURITY.md"
   ],
   "main": "./dist/index.js",
@@ -45,7 +88,10 @@
     "./url": {
       "types": "./dist/url.d.ts",
       "import": "./dist/url.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.js"
     }
-  },
-  "packageManager": "pnpm@10.33.0"
+  }
 }

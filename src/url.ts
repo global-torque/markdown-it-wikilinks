@@ -1,238 +1,180 @@
-interface UrlParts {
-  scheme?: string;
-  host?: string;
-  root?: '/' | null;
-  dirs?: string[];
-  file?: string;
-  hash?: string;
+const SAFE_EXTERNAL_SCHEMES = new Set(["http:", "https:", "mailto:", "tel:"]);
+const SCHEME_PATTERN = /^([A-Za-z][A-Za-z\d+.-]*):/;
+
+/**
+ * Options for {@link createWikilinkHref}.
+ *
+ * @public
+ */
+export interface CreateWikilinkHrefOptions {
+  /** Base used for absolute local links. */
+  readonly baseURL?: string;
+  /** Base used for relative local links. */
+  readonly relativeBaseURL?: string;
+  /** Force local links to use `baseURL`. */
+  readonly makeAllLinksAbsolute?: boolean;
+  /** Suffix appended to non-empty local page paths. */
+  readonly uriSuffix?: string;
+  /** Host-owned page-path transformation. */
+  readonly postProcessPagePath?: (path: string) => string;
+  /** Host-owned heading transformation. */
+  readonly postProcessPageHash?: (hash: string) => string;
 }
 
-interface ParsedPath {
-  root?: '/';
-  dirs?: string[];
-  file?: string;
+interface ReferenceParts {
+  readonly path: string;
+  readonly query: string;
+  readonly hash: string | undefined;
 }
 
-const SCHEME_REGEX = /^([a-zA-Z][a-zA-Z0-9+.-]*):/;
-
-export class Url {
-  readonly scheme?: string;
-
-  readonly host?: string;
-
-  readonly root?: '/' | null;
-
-  readonly dirs?: string[];
-
-  readonly file?: string;
-
-  readonly hash?: string;
-
-  constructor(input: string | UrlParts = {}) {
-    const parts = typeof input === 'string' ? parse(input) : cloneParts(input);
-
-    this.scheme = parts.scheme;
-    this.host = parts.host;
-    this.root = parts.root;
-    this.dirs = parts.dirs;
-    this.file = parts.file;
-    this.hash = parts.hash;
-
-    Object.freeze(this);
+/**
+ * Builds a wikilink destination without decoding existing percent escapes.
+ *
+ * `http`, `https`, `mailto`, and `tel` destinations pass through unchanged.
+ * Other schemes are rejected with a harmless fragment destination.
+ *
+ * @public
+ */
+export function createWikilinkHref(
+  target: string,
+  options: CreateWikilinkHrefOptions = {},
+): string {
+  const cleanedTarget = removeControls(target).trim();
+  const scheme = SCHEME_PATTERN.exec(cleanedTarget)?.[1]?.toLowerCase();
+  if (scheme !== undefined) {
+    return SAFE_EXTERNAL_SCHEMES.has(`${scheme}:`) ? cleanedTarget : "#";
   }
 
-  set(patch: UrlParts): Url {
-    const next: UrlParts = {
-      scheme: this.scheme,
-      host: this.host,
-      root: this.root,
-      dirs: this.dirs ? [...this.dirs] : undefined,
-      file: this.file,
-      hash: this.hash,
-    };
+  const parts = splitReference(cleanedTarget);
+  const transformPath =
+    options.postProcessPagePath ?? defaultPostProcessPagePath;
+  const transformHash =
+    options.postProcessPageHash ?? defaultPostProcessPageHash;
+  const transformedPath = parts.path === "" ? "" : transformPath(parts.path);
+  const withSuffix = appendSuffix(
+    transformedPath,
+    options.uriSuffix ?? ".html",
+  );
+  const isAbsolute =
+    options.makeAllLinksAbsolute === true ||
+    parts.path.startsWith("/") ||
+    transformedPath.startsWith("/");
+  const hrefPath =
+    withSuffix === ""
+      ? ""
+      : joinBase(
+          isAbsolute
+            ? (options.baseURL ?? "/")
+            : (options.relativeBaseURL ?? "./"),
+          withSuffix,
+        );
+  const query = parts.query;
+  const hash =
+    parts.hash === undefined
+      ? ""
+      : `#${encodeFragmentPreservingEscapes(transformHash(parts.hash))}`;
 
-    if ('scheme' in patch) {
-      next.scheme = patch.scheme;
-    }
-
-    if ('host' in patch) {
-      next.host = patch.host;
-    }
-
-    if ('root' in patch) {
-      next.root = patch.root ? '/' : patch.root;
-    }
-
-    if ('dirs' in patch) {
-      next.dirs = patch.dirs && patch.dirs.length > 0 ? [...patch.dirs] : undefined;
-    }
-
-    if ('file' in patch) {
-      next.file = patch.file;
-    }
-
-    if ('hash' in patch) {
-      next.hash = patch.hash;
-    }
-
-    return new Url(next);
-  }
-
-  toString(): string {
-    let output = '';
-
-    if (this.scheme !== undefined) {
-      output += `${this.scheme}:`;
-    }
-
-    if (this.host !== undefined) {
-      output += `//${this.host}`;
-    }
-
-    if (this.root === '/') {
-      output += '/';
-    }
-
-    if (this.dirs && this.dirs.length > 0) {
-      output += `${this.dirs.join('/')}/`;
-    }
-
-    if (this.file !== undefined) {
-      output += this.file;
-    }
-
-    if (this.hash !== undefined) {
-      output += `#${encodeFragment(this.hash)}`;
-    }
-
-    return output;
-  }
+  return `${hrefPath}${query}${hash}` || "#";
 }
 
-function cloneParts(parts: UrlParts): UrlParts {
+function splitReference(target: string): ReferenceParts {
+  const hashIndex = target.indexOf("#");
+  const withoutHash = hashIndex === -1 ? target : target.slice(0, hashIndex);
+  const hash = hashIndex === -1 ? undefined : target.slice(hashIndex + 1);
+  const queryIndex = withoutHash.indexOf("?");
+
   return {
-    scheme: parts.scheme,
-    host: parts.host,
-    root: parts.root,
-    dirs: parts.dirs ? [...parts.dirs] : undefined,
-    file: parts.file,
-    hash: parts.hash,
+    path: queryIndex === -1 ? withoutHash : withoutHash.slice(0, queryIndex),
+    query: queryIndex === -1 ? "" : withoutHash.slice(queryIndex),
+    hash,
   };
 }
 
-function parse(rawInput: string): UrlParts {
-  const input = rawInput.replace(/[\t\n\r]/g, '');
-  let hash: string | undefined;
-  let rest = input;
+function appendSuffix(pagePath: string, suffix: string): string {
+  if (
+    pagePath === "" ||
+    suffix === "" ||
+    pagePath.endsWith("/") ||
+    pagePath.endsWith(suffix)
+  ) {
+    return pagePath;
+  }
+  return `${pagePath}${suffix}`;
+}
 
-  const hashAt = rest.indexOf('#');
-  if (hashAt !== -1) {
-    hash = decodeFragment(rest.slice(hashAt + 1));
-    rest = rest.slice(0, hashAt);
+function joinBase(base: string, pagePath: string): string {
+  const normalizedBase = removeControls(base);
+  const pathWithoutRoot = pagePath.replace(/^\/+/, "");
+
+  if (/^https?:\/\//i.test(normalizedBase)) {
+    const baseWithSlash = normalizedBase.endsWith("/")
+      ? normalizedBase
+      : `${normalizedBase}/`;
+    return new URL(pathWithoutRoot, baseWithSlash).toString();
   }
 
-  let scheme: string | undefined;
-  let host: string | undefined;
-  const schemeMatch = SCHEME_REGEX.exec(rest);
+  if (
+    (normalizedBase === "" || normalizedBase === "./") &&
+    /^\.\.?(?:\/|$)/.test(pagePath)
+  ) {
+    return pagePath;
+  }
 
-  if (schemeMatch) {
-    scheme = schemeMatch[1];
-    rest = rest.slice(schemeMatch[0].length);
+  const baseWithSlash =
+    normalizedBase === ""
+      ? ""
+      : normalizedBase.endsWith("/")
+        ? normalizedBase
+        : `${normalizedBase}/`;
+  const joined = `${baseWithSlash}${pathWithoutRoot}`;
+  return joined.replace(/\/\.\//g, "/").replace(/^\.\/\.\//, "./");
+}
 
-    if (rest.startsWith('//')) {
-      const authority = rest.slice(2);
-      const pathAt = authority.search(/[/?#]/);
-
-      if (pathAt === -1) {
-        host = authority;
-        rest = '';
-      } else {
-        host = authority.slice(0, pathAt);
-        rest = authority.slice(pathAt);
+function defaultPostProcessPagePath(pagePath: string): string {
+  return pagePath
+    .trim()
+    .split("/")
+    .map((segment) => {
+      if (segment === "." || segment === "..") {
+        return segment;
       }
-    }
-  }
-
-  const { root, dirs, file } = parsePath(rest);
-  return { scheme, host, root, dirs, file, hash };
+      return segment.replace(/[\\<>:*|"]/g, "").replace(/\s+/g, "_");
+    })
+    .join("/");
 }
 
-function parsePath(pathValue: string): ParsedPath {
-  const root = pathValue.startsWith('/') ? '/' : undefined;
-  const segments = pathValue.split('/');
-
-  if (root) {
-    segments.shift();
-  }
-
-  const fileSegment = segments.pop();
-  const file = fileSegment === '' || fileSegment === undefined ? undefined : fileSegment;
-  const dirs = segments.length > 0 ? segments : undefined;
-
-  return { root, dirs, file };
+function defaultPostProcessPageHash(pageHash: string): string {
+  return pageHash.trim().replace(/\s+/g, "_");
 }
 
-function decodeFragment(raw: string): string {
-  const encoder = new TextEncoder();
-  const bytes: number[] = [];
-
-  for (let i = 0; i < raw.length; i += 1) {
-    const char = raw[i];
-
+function encodeFragmentPreservingEscapes(fragment: string): string {
+  let result = "";
+  for (let index = 0; index < fragment.length; index += 1) {
+    const character = fragment[index];
     if (
-      char === '%'
-      && i + 2 <= raw.length - 1
-      && /^[0-9a-fA-F]{2}$/.test(raw.slice(i + 1, i + 3))
+      character === "%" &&
+      index + 2 < fragment.length &&
+      /^[\dA-Fa-f]{2}$/.test(fragment.slice(index + 1, index + 3))
     ) {
-      bytes.push(parseInt(raw.slice(i + 1, i + 3), 16));
-      i += 2;
-    } else {
-      const codePoint = raw.codePointAt(i);
-      if (codePoint === undefined) {
-        continue;
-      }
+      result += fragment.slice(index, index + 3);
+      index += 2;
+      continue;
+    }
+    result +=
+      character === undefined || !/[\s"<>`]/u.test(character)
+        ? (character ?? "")
+        : encodeURIComponent(character);
+  }
+  return result;
+}
 
-      const charBytes = encoder.encode(String.fromCodePoint(codePoint));
-      bytes.push(...charBytes);
-
-      if (codePoint > 0xffff) {
-        i += 1;
-      }
+function removeControls(value: string): string {
+  let result = "";
+  for (const character of value) {
+    const codePoint = character.codePointAt(0) ?? 0;
+    if (!(codePoint <= 0x1f || (codePoint >= 0x7f && codePoint <= 0x9f))) {
+      result += character;
     }
   }
-
-  try {
-    return new TextDecoder('utf-8', { fatal: true }).decode(Uint8Array.from(bytes));
-  } catch {
-    return raw;
-  }
+  return result;
 }
-
-function shouldEncode(char: string): boolean {
-  const codePoint = char.codePointAt(0);
-
-  return (
-    codePoint !== undefined
-    && (
-      codePoint < 0x20
-      || char === ' '
-      || char === '"'
-      || char === '<'
-      || char === '>'
-      || char === '`'
-      || char === '%'
-    )
-  );
-}
-
-function encodeFragment(hash: string): string {
-  let output = '';
-
-  for (const char of hash) {
-    output += shouldEncode(char) ? encodeURIComponent(char) : char;
-  }
-
-  return output;
-}
-
-export default Url;
