@@ -2,10 +2,10 @@
 
 ## Supported Versions
 
-| Version         | Status                                                   |
-| --------------- | -------------------------------------------------------- |
-| `0.2.0-beta.*`  | Experimental; fixes are prepared on the newest beta only |
-| `<0.2.0-beta.0` | Unsupported                                              |
+| Version                        | Security fixes                |
+| ------------------------------ | ----------------------------- |
+| Latest `0.2.x`                 | Supported                     |
+| Older versions and prereleases | Upgrade to the latest release |
 
 ## Reporting
 

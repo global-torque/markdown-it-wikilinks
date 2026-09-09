@@ -1,7 +1,6 @@
 # @global-torque/markdown-it-wikilinks
 
-> **Public prerelease:** `0.2.0-beta.4` is the first npm-published candidate.
-> Pin the exact version while the 0.2 contract remains in beta.
+> **Public release:** `0.2.0`. Install the versioned package from npm.
 
 An ESM-only markdown-it plugin for escaped Obsidian-style `[[wikilinks]]`. The
 root package produces ordinary `<a>` HTML and has no Node filesystem, Vue, or
@@ -11,7 +10,7 @@ explicit `./node` adapter.
 ## Install
 
 ```sh
-pnpm add @global-torque/markdown-it-wikilinks@0.2.0-beta.4 markdown-it@14.3.0
+pnpm add @global-torque/markdown-it-wikilinks@0.2.0 markdown-it@14.3.0
 ```
 
 Node 22 or newer and markdown-it 14 are supported.
@@ -140,5 +139,4 @@ other active attributes are ignored. The Node adapter treats content paths and
 symlinks as untrusted. Application tooltip render callbacks remain trusted
 code.
 
-See [SECURITY.md](SECURITY.md) for private vulnerability reporting. This beta
-is not supported as a production npm release.
+See [SECURITY.md](SECURITY.md) for supported releases and private vulnerability reporting.
