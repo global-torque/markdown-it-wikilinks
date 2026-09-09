@@ -4,6 +4,9 @@
 
 - Release the reviewed public package with an ordinary version on npm.
 - Preserve the public API and behavior from 0.2.0-beta.4.
+- Resolve dependency advisories in fast-uri, brace-expansion, js-yaml,
+  nanoid, PostCSS, and Vitest using compatible patched versions.
+- Refresh the runtime gray-matter dependency graph to patched js-yaml 3.15.2.
 
 ## 0.2.0-beta.4 - 2026-07-13
 
