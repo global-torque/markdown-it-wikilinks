@@ -100,6 +100,8 @@ The resolver uses `gray-matter`, atomically parses and caches tooltip values
 during construction/`refresh()`, resolves explicit and same-folder paths before
 unique basenames, returns `undefined` for missing content, and throws on
 ambiguous or malformed content. It never reads a path during link rendering.
+When `fields` is omitted, it checks `summary` and then `description`, ignoring
+blank values. Supplying `fields` replaces that ordered default.
 Symlinks are rejected by default. Opted-in symlinks are indexed under their
 lexical alias only when their real paths remain inside the declared real root.
 

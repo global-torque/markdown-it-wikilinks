@@ -128,7 +128,7 @@ export function createFrontmatterTooltipResolver(
   }
 
   const fields = Object.freeze(
-    (options.fields ?? ["summary"])
+    (options.fields ?? ["summary", "description"])
       .map((field) => field.trim())
       .filter((field) => field !== ""),
   );

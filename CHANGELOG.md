@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Fall back from blank or missing `summary` frontmatter to `description` when
+  resolver fields are omitted.
+
 ## 0.2.0 - 2026-09-09
 
 - Release the reviewed public package with an ordinary version on npm.
