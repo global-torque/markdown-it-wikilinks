@@ -13,7 +13,7 @@ Implemented controls:
 - least-privilege, SHA-pinned GitHub Actions;
 - Node 24 required CI with standard package lint/pack checks and a
   zero-vulnerability audit required for release validation;
-- DCO sign-off, dependency review, Dependabot, Scorecard, secret scanning, push
+- DCO sign-off, Dependabot, Scorecard, secret scanning, push
   protection, and private vulnerability reporting;
 - explicit package contents, API reports, coverage thresholds, and source maps.
 
