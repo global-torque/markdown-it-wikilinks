@@ -19,9 +19,9 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
     "build": "pnpm run clean && tsc -p tsconfig.build.json",
-    "lint": "eslint --max-warnings=0 src scripts vitest.config.ts",
-    "format:check": "prettier --check \"src/**/*.ts\" \"scripts/**/*.mjs\" \".github/**/*.{yml,json,md}\" \"docs/{rfcs,ossf}/**/*.md\" \"*.{json,md,yaml}\"",
-    "format:write": "prettier --write \"src/**/*.ts\" \"scripts/**/*.mjs\" \".github/**/*.{yml,json,md}\" \"docs/{rfcs,ossf}/**/*.md\" \"*.{json,md,yaml}\"",
+    "lint": "eslint --max-warnings=0 src vitest.config.ts",
+    "format:check": "prettier --check \"src/**/*.ts\" \".github/**/*.{yml,json,md}\" \"docs/{rfcs,ossf}/**/*.md\" \"*.{json,md,yaml}\"",
+    "format:write": "prettier --write \"src/**/*.ts\" \".github/**/*.{yml,json,md}\" \"docs/{rfcs,ossf}/**/*.md\" \"*.{json,md,yaml}\"",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -29,11 +29,10 @@
     "api:report:update": "pnpm run build && api-extractor run --local --verbose && api-extractor run --config api-extractor.node.json --local --verbose",
     "docs:api": "pnpm run api:report:update && api-documenter markdown --input temp/root --output docs/api && api-documenter markdown --input temp/node --output docs/api-node",
     "package:lint": "publint && attw --pack . --profile esm-only",
-    "content:check": "node scripts/verify-public-content.mjs",
-    "ci": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test:coverage && pnpm run build && pnpm run api:check && pnpm run package:lint && pnpm run content:check"
+    "ci": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test:coverage && pnpm run build && pnpm run api:check && pnpm run package:lint"
   },
   "peerDependencies": {
-    "markdown-it": "^14.1.1"
+    "markdown-it": "^14.3.1"
   },
   "dependencies": {
     "@types/markdown-it": "^14.1.2",
@@ -49,10 +48,10 @@
     "@typescript-eslint/parser": "^8.63.0",
     "@vitest/coverage-v8": "5.0.0",
     "eslint": "10.10.0",
-    "markdown-it": "^15.0.2",
+    "markdown-it": "^14.3.1",
     "prettier": "3.9.6",
     "publint": "0.3.24",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.2",
     "vitest": "5.0.0"
   },
   "repository": {

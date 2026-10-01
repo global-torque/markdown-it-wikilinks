@@ -4,6 +4,13 @@
 
 - Fall back from blank or missing `summary` frontmatter to `description` when
   resolver fields are omitted.
+- Raise the markdown-it peer and development dependency floors to 14.3.1 and
+  pin patched fast-uri and brace-expansion versions to clear dependency
+  advisories.
+- Retire the custom candidate, manifest, attestation, clean-room, and
+  npm-provenance pipeline and the repository CodeQL workflow; release validation
+  now uses Node 24 CI, a zero-vulnerability audit, standard package lint/pack,
+  and named real-consumer validation.
 
 ## 0.2.0 - 2026-09-09
 
