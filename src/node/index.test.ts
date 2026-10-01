@@ -25,6 +25,28 @@ const writeMarkdown = (root: string, relative: string, frontmatter: string) => {
 };
 
 describe("createFrontmatterTooltipResolver", () => {
+  it("defaults to summary with description as a fallback", () => {
+    const root = createRoot();
+    writeMarkdown(
+      root,
+      "summary.md",
+      "summary: Summary first\ndescription: Description second",
+    );
+    writeMarkdown(
+      root,
+      "description.md",
+      'summary: "  "\ndescription: Description fallback',
+    );
+    writeMarkdown(root, "missing.md", "title: Missing tooltip");
+    const resolver = createFrontmatterTooltipResolver({ root });
+
+    expect(resolver.resolveTooltip(context("summary"))).toBe("Summary first");
+    expect(resolver.resolveTooltip(context("description"))).toBe(
+      "Description fallback",
+    );
+    expect(resolver.resolveTooltip(context("missing"))).toBeUndefined();
+  });
+
   it("resolves explicit, same-folder, alternate-field, and unique-basename targets", () => {
     const root = createRoot();
     const source = writeMarkdown(root, "guide/source.md", "summary: Source");
