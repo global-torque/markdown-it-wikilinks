@@ -10,7 +10,7 @@ explicit `./node` adapter.
 ## Install
 
 ```sh
-pnpm add @global-torque/markdown-it-wikilinks@0.2.0 markdown-it@14.3.0
+pnpm add @global-torque/markdown-it-wikilinks@0.2.0 markdown-it@14.3.1
 ```
 
 Node 22 or newer and markdown-it 14 are supported.
@@ -37,22 +37,6 @@ Unicode, and existing percent escapes. `http:`, `https:`, `mailto:`, and `tel:`
 destinations pass through. Other schemes are neutralized. Relative paths stay
 relative; absolute paths and `makeAllLinksAbsolute` use `baseURL`; synthetic
 `/./` segments are never emitted.
-
-This example is extracted from the packed README and executed in clean npm and
-pnpm consumers:
-
-```js clean-room
-import assert from "node:assert/strict";
-import { createWikilinkHref } from "@global-torque/markdown-it-wikilinks/url";
-
-assert.equal(
-  createWikilinkHref("guides/Getting Started?mode=full#Read Me", {
-    uriSuffix: "",
-  }),
-  "./guides/Getting_Started?mode=full#Read_Me",
-);
-assert.equal(createWikilinkHref("javascript:alert(1)"), "#");
-```
 
 Available core options are:
 

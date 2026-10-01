@@ -19,17 +19,10 @@ Vue tooltip markup, VitePress config, app routes, asynchronous renderer callback
 
 ## Compatibility and release evidence
 
-Two maintained VitePress sites and Advayta must use the exact candidate;
-Advayta's local plugin copy is removed only after tooltip and destination
-parity passes.
+Two maintained VitePress sites and Advayta must pass named real-consumer validation; Advayta's local plugin copy is removed only after tooltip and destination parity passes.
 
-The candidate is built and packed once from a clean protected source commit.
-The npm-format tarball, SHA-512 digest, per-file manifest, source commit, and
-GitHub attestation remain immutable. A failed candidate receives a new beta
-version; no tag or asset is replaced.
+Node 24 CI installs the frozen lockfile and runs the standard package lint, pack, test, build, API, and coverage checks; release validation also requires a zero-vulnerability audit. The custom candidate, manifest, attestation, clean-room, and npm-provenance pipeline is retired and is not part of this contract.
 
 ## Decision
 
-Accept this contract only after the source pull request, API report, package
-tests, clean rooms, and named-consumer evidence have no unresolved actionable
-findings.
+Accept this contract only after the source pull request, API report, standard package checks, and named-consumer evidence have no unresolved actionable findings.

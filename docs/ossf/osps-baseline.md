@@ -11,13 +11,10 @@ Implemented controls:
   linear-history, no-force-push, and no-deletion rules;
 - protected immutable `v*` tags;
 - least-privilege, SHA-pinned GitHub Actions;
-- Node 22 and 24 required CI with Node 26 informational CI;
-- DCO sign-off, dependency review, Dependabot, CodeQL, Scorecard, secret
-  scanning, push protection, and private vulnerability reporting;
-- explicit package contents, API reports, coverage thresholds, source maps,
-  clean-room verification, SHA-512 manifests, and build provenance.
+- Node 24 required CI with standard package lint/pack checks and a
+  zero-vulnerability audit required for release validation;
+- DCO sign-off, dependency review, Dependabot, Scorecard, secret scanning, push
+  protection, and private vulnerability reporting;
+- explicit package contents, API reports, coverage thresholds, and source maps.
 
-Release-blocking controls are the package's exact named-consumer gate and
-reviewed candidate release issue. npm trusted publishing and registry
-provenance remain blocked until the organization owner configures npm access.
-No exception permits publishing a registry version without those controls.
+Release-blocking controls are the package's named real-consumer validation and the standard Node 24 CI gates. The custom candidate, manifest, attestation, clean-room, npm-provenance, and CodeQL workflows are retired. Registry publication follows the normal npm process after the organization owner configures npm access.

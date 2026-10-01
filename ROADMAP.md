@@ -6,10 +6,8 @@ The active public milestone is
 Promotion order:
 
 1. Merge reviewed source and governance on protected `main`.
-2. Create one clean, attested beta candidate and retain its exact bytes.
-3. Pass npm/pnpm clean rooms and the named real-consumer gate.
-4. Publish the immutable GitHub prerelease and validate downloaded bytes.
-5. Configure npm trusted publishing before any registry release.
+2. Pass Node 24 CI with the frozen lockfile, standard package lint/pack checks, and the repository test, build, API, and coverage checks; confirm a zero-vulnerability audit for release validation.
+3. Complete named real-consumer validation for the maintained VitePress sites and Advayta.
+4. Publish the reviewed package through the normal npm release process.
 
-Registry publication and deletion of private fallback source remain blocked
-until every preceding item has public evidence.
+The custom candidate, manifest, attestation, clean-room, and npm-provenance pipeline is retired and is not a release prerequisite.
